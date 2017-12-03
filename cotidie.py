@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime, timedelta
-import requests
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 import subprocess
 import logging
 import os
@@ -28,6 +27,10 @@ logging.info("*"*20 + " NUOVA ESECUZIONE " + "*"*20)
 
 if reboot == True:
   for msg in msgs:
+
+    if os.path.exists(msg):
+      os.remove(msg)
+
     # 2 synthetize
     cmd = pico.format(msg).split()
     cmd.append(msgs[msg])
@@ -43,13 +46,13 @@ if reboot == True:
 now = datetime.now()
 
 # 1 forecast
-status, previsioni_oggi = prevedi(forecast, delta=12)
+status, previsioni_oggi = prevedi(forecast, now, delta=12)
 
-if os.path.exists(metofile):
-  os.remove(metofile)
+if os.path.exists(meteofile):
+  os.remove(meteofile)
 
 # 2 synthetize
-cmd = pico.format(metofile).split()
+cmd = pico.format(meteofile).split()
 cmd.append(previsioni_oggi)
 status = run(cmd, testo="pico")
 if status != 0:
@@ -60,18 +63,15 @@ if status != 0:
 # Play
 # ** * ** * ****  ** * ** * ****  ** * ** * ****  ** * ** * ****
 
-for msg in list(msgs) + [meteofile]:
+msgs = list(msgs)
+msgs.append(meteofile)
+
+for msg in sorted(msgs):
   cmd = aplay.format(msg).split()
   status = run(cmd, testo="aplay")
   if status != 0:
     os._exit(1)
-  sleep(1.5)
-
-## 4 remove
-#cmd = remove.format(filename).split()
-#status = run(cmd, testo="remove")
-#if status != 0:
-  #os._exit(1)
+  sleep(.7)
 
 
 # ** * ** * ****  ** * ** * ****  ** * ** * ****  ** * ** * ****
