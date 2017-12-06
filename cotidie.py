@@ -45,18 +45,19 @@ if reboot == True:
 
 now = datetime.now()
 
-# 1 forecast
-status, previsioni_oggi = prevedi(forecast, now, delta=12)
-
 if os.path.exists(meteofile):
   os.remove(meteofile)
 
-# 2 synthetize
-cmd = pico.format(meteofile).split()
-cmd.append(previsioni_oggi)
-status = run(cmd, testo="pico")
-if status != 0:
-  os._exit(1)
+if meteo == True:
+  # 1 forecast
+  status, previsioni_oggi = prevedi(forecast, now, delta=12)
+
+  # 2 synthetize
+  cmd = pico.format(meteofile).split()
+  cmd.append(previsioni_oggi)
+  status = run(cmd, testo="pico")
+  if status != 0:
+    os._exit(1)
 
 
 # ** * ** * ****  ** * ** * ****  ** * ** * ****  ** * ** * ****

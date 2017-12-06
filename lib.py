@@ -43,6 +43,9 @@ def prevedi(url, now, delta):
   massima = round(massima, 1)
 
   condizioni = []
+  if massima < 5:
+    condizioni.append('Oggi si agigghia!')
+
   for d in [i['weather'] for i in previsioni]:
     for j in d:
       if j['description'] not in condizioni:
